@@ -2,9 +2,11 @@ package com.example.wifip2ptest;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,6 +45,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         holder.tv_deviceName.setText(mDeviceList.get(position).deviceName);
         holder.tv_deviceAddress.setText(mDeviceList.get(position).deviceAddress);
         holder.tv_deviceStatus.setText(WifiHelper.getInstance(mContext).getDeviceStatus(mDeviceList.get(position).status));
+        holder.btn_handle.setText(WifiHelper.getInstance(mContext).getBtnStatus(mDeviceList.get(position).status));
     }
 
     @Override
@@ -54,11 +57,13 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         private TextView tv_deviceName;
         private TextView tv_deviceAddress;
         private TextView tv_deviceStatus;
+        private Button btn_handle;
         public DeviceViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_deviceAddress = itemView.findViewById(R.id.tv_device_ip);
             tv_deviceName = itemView.findViewById(R.id.tv_device_name);
             tv_deviceStatus = itemView.findViewById(R.id.tv_device_status);
+            btn_handle = itemView.findViewById(R.id.btn_handle);
         }
     }
 }

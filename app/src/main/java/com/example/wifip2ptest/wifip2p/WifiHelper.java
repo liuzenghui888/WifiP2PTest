@@ -331,6 +331,24 @@ public class WifiHelper {
         }
     }
 
+    //获取设备状态
+    public String getBtnStatus(int btnStatus) {
+        switch (btnStatus) {
+            case WifiP2pDevice.AVAILABLE:
+                return "连接";
+            case WifiP2pDevice.INVITED:
+                return "取消";
+            case WifiP2pDevice.CONNECTED:
+                return "断开";
+            case WifiP2pDevice.FAILED:
+                return "连接";
+            case WifiP2pDevice.UNAVAILABLE:
+                return "不可用";
+            default:
+                return "未知";
+        }
+    }
+
     public void setDeviceList(List<WifiP2pDevice> devicelist){
         mDeviceList = devicelist;
     }
