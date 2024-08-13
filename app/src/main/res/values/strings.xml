@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">WifiP2PTest</string>
+    <string name="device_handle">操作</string>
+    <string name="device_name">设备名称</string>
+    <string name="device_ip">设备ip</string>
+    <string name="device_status">设备状态</string>
+    <string name="wifip2p_handle">开启WifiP2P</string>
+    <string name="request_device">获取设备列表</string>
 </resources>
