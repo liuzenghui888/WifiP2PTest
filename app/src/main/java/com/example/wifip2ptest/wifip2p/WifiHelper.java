@@ -22,53 +22,28 @@ public class WifiHelper {
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private P2PBroadCastReceiver receiver;
-    /**
-     * 单例模式实现的WifiHelper类的实例变量。
-     * 使用volatile关键字确保多线程环境下的可见性和一致性。
-     */
-    private static volatile WifiHelper instance;
-
+    private WifiP2PListener mWifiP2PListener;
     private Context mContext;
     private WifiP2pInfo mWifiP2pInfo;
 
     private List<WifiP2pDevice> mDeviceList = new ArrayList<>();
 
     private String TAG = "[WifiP2p Demo App] WifiHelper";
-    private WifiP2PListener mWifiP2PListener;
+    private static volatile WifiHelper instance;
 
-    /**
-     * 获取WifiHelper的单例对象。
-     * 通过此方法确保整个应用中只存在一个WifiHelper的实例，便于统一管理WiFi相关的操作。
-     * 使用synchronized关键字保证线程安全，在多线程环境下也能正确获取到单例对象。
-     *
-     * @param context 上下文对象，用于WifiHelper初始化时的必要参数，通常为Activity或Application的Context。
-     * @return WifiHelper的单例对象。
-     */
     public synchronized static WifiHelper getInstance(Context context){
-        // 检查是否已经存在实例，如果不存在则创建新的实例
         if(instance == null){
             instance = new WifiHelper(context);
         }
-        // 返回已存在的或新创建的实例
         return instance;
     }
 
-    /**
-     * WifiHelper的构造函数。
-     * 初始化WifiP2P相关的管理器和通道，并注册广播接收器，为进行Wifi直连通信做好准备。
-     *
-     * @param context 上下文对象，用于获取系统服务和进行其他初始化操作。
-     */
     public WifiHelper(@NonNull Context context) {
         Log.d(TAG,"WifiHelper onCreate");
-        // 获取应用程序上下文，以避免内存泄漏。
         mContext = context.getApplicationContext();
-        // 获取WifiP2P管理器实例。
         manager = (WifiP2pManager) mContext.getSystemService(Context.WIFI_P2P_SERVICE);
-        // 初始化WifiP2P通道。
         channel = manager.initialize(mContext, mContext.getMainLooper(), null);
         Log.d(TAG,"manager.initialize : " + channel);
-        // 创建并注册P2P广播接收器。
         receiver = new P2PBroadCastReceiver(manager, channel);
     }
 
@@ -80,11 +55,6 @@ public class WifiHelper {
         return this;
     }
 
-    /**
-     * 创建Wi-Fi Direct组。
-     * 通过调用WifiP2pManager的createGroup方法来发起组创建请求。如果组创建成功，将调用mWifiP2PListener的onCreateGroup方法，并传入true作为参数。
-     * 如果组创建失败，将根据失败原因打印日志，并调用mWifiP2PListener的onCreateGroup方法，传入false和失败原因代码。
-     */
     //创建组
     public void createGroup(){
         Log.d(TAG,"createGroup");
@@ -116,7 +86,6 @@ public class WifiHelper {
         });
     }
 
-    //删除组
     public void removeGroup(){
         manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
             @Override
@@ -125,6 +94,7 @@ public class WifiHelper {
                 if(mWifiP2PListener != null){
                     mWifiP2PListener.onRemoveGroup(true);
                 }
+                discoverPeers();
             }
 
             @Override
@@ -143,7 +113,6 @@ public class WifiHelper {
             }
         });
     }
-    //发现设备
     public void discoverPeers(){
         manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
             @Override
@@ -170,14 +139,11 @@ public class WifiHelper {
             }
         });
     }
-    //连接设备
+
     public void connect(WifiP2pDevice device){
         if(device == null || TextUtils.isEmpty(device.deviceAddress)){
             return;
         }
-
-        Log.d(TAG,"device : " + device);
-
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = device.deviceAddress;
         Log.d(TAG, "config.deviceAddress : " + config.deviceAddress);
@@ -211,13 +177,13 @@ public class WifiHelper {
         });
     }
 
-    //取消连接
     public void cancelConnect(){
         Log.d(TAG, "cancelConnect channel : " + channel);
         manager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 Log.d(TAG,"cancelConnect is Success");
+                discoverPeers();
             }
 
             @Override
@@ -227,7 +193,6 @@ public class WifiHelper {
         });
     }
 
-    //请求查找设备
     public void requstpeers(){
         manager.requestPeers(channel, new WifiP2pManager.PeerListListener() {
             @Override
@@ -246,7 +211,6 @@ public class WifiHelper {
         });
     }
 
-    //请求组信息
     public void requestGroupInfo(){
         manager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
             @Override
@@ -266,7 +230,6 @@ public class WifiHelper {
         });
     }
 
-    //请求连接信息
     public void requestConnectInfo(){
         manager.requestConnectionInfo(channel, new WifiP2pManager.ConnectionInfoListener() {
             @Override
@@ -278,7 +241,6 @@ public class WifiHelper {
         });
     }
 
-    //调用注册广播
     public void registerReceiver() {
         if (receiver != null){
             Log.d(TAG,"WifiHelper registerReceiver");
@@ -287,7 +249,7 @@ public class WifiHelper {
             Log.e(TAG,"WifiHelper registerReceiver is null");
         }
     }
-    //调用注销广播
+
     public void unregisterReceiver() {
         if (receiver != null){
             Log.d(TAG,"WifiHelper unregisterReceiver");
@@ -313,7 +275,6 @@ public class WifiHelper {
         }
     }
 
-    //获取设备状态
     public String getDeviceStatus(int deviceStatus) {
         switch (deviceStatus) {
             case WifiP2pDevice.AVAILABLE:
@@ -331,7 +292,6 @@ public class WifiHelper {
         }
     }
 
-    //获取设备状态
     public String getBtnStatus(int btnStatus) {
         switch (btnStatus) {
             case WifiP2pDevice.AVAILABLE:

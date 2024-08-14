@@ -60,7 +60,7 @@ public class P2PBroadCastReceiver extends BroadcastReceiver {
             Log.d(TAG, "WIFI_P2P_STATE_CHANGED_ACTION！！！");
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
-                Log.d(TAG, "####Wi-Fi P2P is enabled");
+                Log.d(TAG, "Wi-Fi P2P is enabled");
                 mWifiP2PListener.onWifiP2pEnabled(true);
             } else {
                 Log.e(TAG, "Wi-Fi P2P is not enabled");
@@ -82,29 +82,27 @@ public class P2PBroadCastReceiver extends BroadcastReceiver {
             }
 
         }else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)){
-            Log.d(TAG, "####    WIFI_P2P_THIS_DEVICE_CHANGED_ACTION！！！    ####");
+            Log.d(TAG, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION！！！");
 
             WifiP2pDevice wifip2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             if (wifip2pDevice != null){
-                Log.d(TAG, "111 : " + wifip2pDevice);
-                Log.d(TAG, "111wifip2pDevice deviceName : " + wifip2pDevice.deviceName);
-                Log.d(TAG, "111wifip2pDevice status : " + wifip2pDevice.status);
-                Log.d(TAG, "111wifip2pDevice deviceAddress : " + wifip2pDevice.deviceAddress);
+                Log.d(TAG, "wifip2pDevice : " + wifip2pDevice);
+                Log.d(TAG, "wifip2pDevice deviceName : " + wifip2pDevice.deviceName);
+                Log.d(TAG, "wifip2pDevice status : " + wifip2pDevice.status);
+                Log.d(TAG, "wifip2pDevice deviceAddress : " + wifip2pDevice.deviceAddress);
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 manager.requestDeviceInfo(channel, new WifiP2pManager.DeviceInfoListener() {
-
                     @Override
                     public void onDeviceInfoAvailable(@Nullable WifiP2pDevice wifiP2pDevice) {
                         if(wifiP2pDevice != null){
-                            Log.d(TAG, "111 : " + wifiP2pDevice);
-                            Log.d(TAG, "222WifiP2pDevice deviceName : " + wifiP2pDevice.deviceName);
-                            Log.d(TAG, "222WifiP2pDevice status : " + wifiP2pDevice.status);
-                            Log.d(TAG, "222WifiP2pDevice deviceAddress : " + wifiP2pDevice.deviceAddress);
-                            Log.d(TAG, "222WifiP2pDevice deviceAddress : " + wifiP2pDevice.primaryDeviceType);
+                            Log.d(TAG, "WifiP2pDevice : " + wifiP2pDevice);
+                            Log.d(TAG, "WifiP2pDevice deviceName : " + wifiP2pDevice.deviceName);
+                            Log.d(TAG, "WifiP2pDevice status : " + wifiP2pDevice.status);
+                            Log.d(TAG, "WifiP2pDevice deviceAddress : " + wifiP2pDevice.deviceAddress);
+                            Log.d(TAG, "WifiP2pDevice primaryDeviceType : " + wifiP2pDevice.primaryDeviceType);
                         }
-                        Log.d(TAG, "####    WIFI_P2P_THIS_DEVICE_CHANGED_ACTION！！！    ####");
                     }
                 });
             }

@@ -1,5 +1,6 @@
 package com.example.wifip2ptest;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.util.Log;
@@ -41,11 +42,35 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
     }
 
     @Override
-    public void onBindViewHolder(DeviceAdapter.DeviceViewHolder holder, int position) {
+    public void onBindViewHolder(DeviceAdapter.DeviceViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tv_deviceName.setText(mDeviceList.get(position).deviceName);
         holder.tv_deviceAddress.setText(mDeviceList.get(position).deviceAddress);
         holder.tv_deviceStatus.setText(WifiHelper.getInstance(mContext).getDeviceStatus(mDeviceList.get(position).status));
         holder.btn_handle.setText(WifiHelper.getInstance(mContext).getBtnStatus(mDeviceList.get(position).status));
+
+        holder.btn_handle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (mDeviceList.get(position).status) {
+                    case WifiP2pDevice.AVAILABLE:
+                        WifiHelper.getInstance(v.getContext()).connect(mDeviceList.get(position));
+                        break;
+                    case WifiP2pDevice.INVITED:
+                        WifiHelper.getInstance(v.getContext()).cancelConnect();
+                        break;
+                    case WifiP2pDevice.CONNECTED:
+                        WifiHelper.getInstance(v.getContext()).removeGroup();
+                        break;
+                    case WifiP2pDevice.FAILED:
+                        WifiHelper.getInstance(v.getContext()).connect(mDeviceList.get(position));
+                        break;
+                    case WifiP2pDevice.UNAVAILABLE:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     @Override
